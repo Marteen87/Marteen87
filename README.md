@@ -13,6 +13,8 @@ First executable foundation for Martín Monzón's job-search workflow.
 ```bash
 python -m src.applybot --profile data/profile.json --vacancies data/vacancies.csv --out output
 python -m unittest discover -s tests -v
+# Optional Gemini API extraction (requires a Google AI API key):
+# python -m src.gemini_extract --notes path/to/notes.txt --out output/gemini_vacancies.json
 ```
 
 ## Input CSV
@@ -26,7 +28,7 @@ Edit `data/profile.json` with verified facts only. Keep `evidence` tied to actua
 1. In NotebookLM, use the relevant notebooks as source-grounded research; export/copy only the notes or source extracts you are permitted to use.
 2. Ask Gemini to return **only** the JSON structure documented in `docs/GEMINI_VACANCY_CONTRACT.md`, with source URLs and uncertainty noted.
 3. Review the output, then import the approved vacancy rows into `data/vacancies.csv`. Do not put Google passwords, cookies, or tokens in the repository.
-4. Optional future integration: set `GEMINI_API_KEY` as a GitHub Actions secret only after choosing to enable an API-based Gemini step. This starter does not call Gemini or access NotebookLM automatically.
+4. Optional API adapter is included: copy/export the authorized NotebookLM research notes to a local text file, set `GEMINI_API_KEY` in your local environment, then run `python -m src.gemini_extract --notes path/to/notes.txt --out output/gemini_vacancies.json`. The adapter structures only supplied notes; it does not access NotebookLM or browse live vacancies. Review every URL and fact before importing.
 5. Inspect generated `output/` artifacts and approve each application yourself.
 
 ## GitHub Actions
