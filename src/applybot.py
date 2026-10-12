@@ -50,7 +50,7 @@ def score_vacancy(vacancy: dict[str, str], profile: dict[str, Any]) -> dict[str,
     ]))
     skills = profile.get("verified_keywords", [])
     verified = {str(x).strip().lower() for x in skills if str(x).strip()}
-    matched = sorted(k for k in verified if terms(k) & target)
+    matched = sorted(k for k in verified if terms(k) and terms(k).issubset(target))
     gaps = sorted(k for k in verified if k not in matched)
     score = round(100 * len(matched) / len(verified)) if verified else 0
     return {
