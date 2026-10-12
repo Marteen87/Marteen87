@@ -1,0 +1,11 @@
+{
+  "candidate_name": "Martín Monzón",
+  "verified_keywords": [],
+  "evidence": [],
+  "profile_status": "NEEDS_CV_EXTRACTION_AND_HUMAN_VERIFICATION",
+  "rules": [
+    "Only add a keyword after verifying it against the master CV or other reliable evidence.",
+    "Do not infer years of experience, education, language level, tools, certifications, or outcomes.",
+    "Keep sensitive personal data out unless strictly needed for a specific application."
+  ]
+}
