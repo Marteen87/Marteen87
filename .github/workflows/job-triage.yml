@@ -1,0 +1,32 @@
+name: Busca Empleos - triage
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 11 * * 1-5"
+
+permissions:
+  contents: read
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+      - name: Generate vacancy triage
+        run: python -m src.applybot --profile data/profile.json --vacancies data/vacancies.csv --out output
+      - name: Upload report and draft packs
+        uses: actions/upload-artifact@v4
+        with:
+          name: busca-empleos-report
+          path: output/
+          if-no-files-found: error
+          retention-days: 30
