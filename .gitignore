@@ -10,3 +10,6 @@ token.json
 *.pem
 *.key
 .DS_Store
+
+# Private candidate data: never commit personal profiles or evidence
+/data/private/
