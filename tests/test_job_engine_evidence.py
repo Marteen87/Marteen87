@@ -13,10 +13,21 @@ class JobEngineEvidenceTests(unittest.TestCase):
         self.assertTrue(all([CandidateProfile, ProfileManager, EvidenceRecord, EvidenceRegistry, evaluate_vacancy, ArtifactStore, SimilarityIndex, ReviewGate]))
 
     def test_profile_validation_and_roundtrip(self):
+        profile_data = {
+            "candidate_id": "c1", "candidate_name": "Test", "role_focus": ["AI Operations"],
+            "skills": ["LLM APIs"], "experience": ["Commercial operations"],
+            "evidence_refs": ["e1"], "unknowns": [],
+            "location": "Parana, Argentina", "contact": {"email": "test@example.invalid"},
+            "positioning": {"headline": "AI + commercial"}, "projects": [{"name": "ORGANISM"}],
+            "education": ["Perito Mercantil"]
+        }
         with tempfile.TemporaryDirectory() as d:
-            m = ProfileManager(CandidateProfile(candidate_id="c1", candidate_name="Test"), Path(d)/"profile.json")
+            path = Path(d)/"profile.json"
+            m = ProfileManager(CandidateProfile.from_dict(profile_data), path)
             self.assertTrue(m.validate()["valid"]); m.save()
-            self.assertEqual(ProfileManager.load(Path(d)/"profile.json").profile.candidate_id, "c1")
+            loaded = ProfileManager.load(path)
+            self.assertEqual(loaded.profile.candidate_id, "c1")
+            self.assertEqual(loaded.profile.to_dict(), profile_data)
 
     def test_unverified_evidence_does_not_support_claim(self):
         r = EvidenceRegistry([EvidenceRecord("e1","Python","SELF_REPORTED","CV",0.7,"2026-11-01",verified_for=["D1"],mapping_reviewed_by="human-reviewer",mapping_reviewed_at="2026-11-01T12:00:00Z")])
