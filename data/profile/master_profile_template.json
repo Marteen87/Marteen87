@@ -1,27 +1,9 @@
-from __future__ import annotations
-
-from dataclasses import dataclass
-from typing import Any
-
-
-@dataclass
-class ReviewDecision:
-    status: str
-    reason: str | None = None
-    require_human_review: bool = True
-
-
-class ReviewGate:
-    def __init__(self, require_human_review: bool = True):
-        self.require_human_review = require_human_review
-
-    def decide(self, evaluation: dict[str, Any]) -> ReviewDecision:
-        recommendation = str(evaluation.get("recommendation", "REVIEW")).upper()
-        gaps = evaluation.get("critical_gaps", []) or []
-
-        if recommendation == "DO_NOT_APPLY":
-            return ReviewDecision(status="REJECTED", reason="No hay suficiente evidencia o hay brechas críticas.", require_human_review=True)
-        if recommendation == "APPLY":
-            return ReviewDecision(status="APPROVED", reason="La evidencia disponible respalda la decisión inicial.", require_human_review=True)
-        return ReviewDecision(status="PENDING", reason="Necesita revisión humana: " + "; ".join(gaps[:3]) if gaps else "Necesita revisión humana.", require_human_review=True)
-
+{
+  "candidate_id": "candidate-local",
+  "candidate_name": "",
+  "role_focus": [],
+  "skills": [],
+  "experience": [],
+  "evidence_refs": [],
+  "unknowns": []
+}
