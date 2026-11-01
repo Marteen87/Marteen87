@@ -33,4 +33,4 @@ The command writes JSON and Markdown review artifacts, including a SHA-256 hash 
 
 ## Evidence policy
 
-A record must be `VERIFIED`, be referenced by the profile and requirement, and include an explicit requirement mapping with reviewer identity and timestamp before it can support that requirement. Similarity scores are not evidence. Every result remains `REVIEW`; human approval is always required.
+Candidate evidence IDs remain in the private profile and registry. Public vacancy fixtures contain requirements only. A record supports a requirement only when its status is `VERIFIED`, its ID is referenced by the private profile, and its registry mapping includes that requirement ID plus reviewer identity and timestamp. Similarity scores are not evidence. Every result remains `REVIEW`; human approval is always required.
