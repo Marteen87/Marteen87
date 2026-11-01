@@ -6,6 +6,7 @@ from src.core.compatibility_engine import evaluate_vacancy
 from src.core.artifact_store import ArtifactStore
 from src.core.similarity_service import SimilarityIndex
 from src.core.review_gate import ReviewGate
+from src.core.evaluate_vacancy_cli import main as evaluate_cli_main
 
 class JobEngineEvidenceTests(unittest.TestCase):
     def test_import_contracts(self):
@@ -85,6 +86,25 @@ class JobEngineEvidenceTests(unittest.TestCase):
         decision = ReviewGate().decide({"recommendation":"APPLY","critical_gaps":[]})
         self.assertEqual(decision.status, "PENDING_HUMAN_REVIEW")
         self.assertTrue(decision.human_review_required)
+
+    def test_cli_creates_review_artifacts_without_submitting(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            profile = root/"profile.json"
+            evidence = root/"evidence.json"
+            vacancy = root/"vacancy.json"
+            output = root/"reviews"
+            profile.write_text(json.dumps({"candidate_id":"c1","candidate_name":"Test","evidence_refs":[]}), encoding="utf-8")
+            evidence.write_text(json.dumps({"records":[]}), encoding="utf-8")
+            vacancy.write_text(json.dumps({"vacancy_id":"v-cli","source_url":"https://example.invalid/role","requirements":[
+                {"requirement_id":"M1","text":"English C1","type":"mandatory","evidence_refs":[]}
+            ]}), encoding="utf-8")
+            self.assertEqual(evaluate_cli_main(["--profile",str(profile),"--evidence",str(evidence),"--vacancy",str(vacancy),"--output",str(output)]), 0)
+            artifact = json.loads((output/"v-cli"/"artifact.json").read_text(encoding="utf-8"))
+            self.assertEqual(artifact["payload"]["recommendation"], "REVIEW")
+            self.assertEqual(artifact["payload"]["critical_gaps"], ["M1"])
+            self.assertTrue(artifact["payload"]["human_review_required"])
+            self.assertTrue((output/"v-cli"/"artifact.md").is_file())
 
     def test_templates_are_valid_json(self):
         for p in ["data/profile/master_profile_template.json","data/profile/evidence_registry_template.json"]:
