@@ -13,16 +13,21 @@ class CandidateProfile:
     experience: list[str] = field(default_factory=list)
     evidence_refs: list[str] = field(default_factory=list)
     unknowns: list[str] = field(default_factory=list)
+    extra_fields: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "CandidateProfile":
         allowed = {"candidate_id", "candidate_name", "role_focus", "skills", "experience", "evidence_refs", "unknowns"}
-        return cls(**{k: data[k] for k in allowed if k in data})
+        core = {k: data[k] for k in allowed if k in data}
+        extra = {k: v for k, v in data.items() if k not in allowed}
+        return cls(**core, extra_fields=extra)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"candidate_id": self.candidate_id, "candidate_name": self.candidate_name,
-                "role_focus": self.role_focus, "skills": self.skills, "experience": self.experience,
-                "evidence_refs": self.evidence_refs, "unknowns": self.unknowns}
+        payload = {"candidate_id": self.candidate_id, "candidate_name": self.candidate_name,
+                   "role_focus": self.role_focus, "skills": self.skills, "experience": self.experience,
+                   "evidence_refs": self.evidence_refs, "unknowns": self.unknowns}
+        payload.update(self.extra_fields)
+        return payload
 
 class ProfileManager:
     def __init__(self, profile: CandidateProfile | None = None, path: str | Path | None = None):
@@ -38,6 +43,7 @@ class ProfileManager:
         if not self.profile.candidate_id.strip(): issues.append("candidate_id is required")
         for name in ("role_focus", "skills", "experience", "evidence_refs", "unknowns"):
             if not isinstance(getattr(self.profile, name), list): issues.append(f"{name} must be a list")
+        if not isinstance(self.profile.extra_fields, dict): issues.append("extra_fields must be an object")
         return {"valid": not issues, "issues": issues}
 
     def save(self) -> None:
