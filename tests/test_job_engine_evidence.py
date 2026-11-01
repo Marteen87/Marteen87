@@ -38,7 +38,7 @@ class JobEngineEvidenceTests(unittest.TestCase):
         self.assertEqual(result["critical_gaps"], ["R1"])
 
     def test_evaluator_only_accepts_evidence_mapped_to_requirement(self):
-        evidence = EvidenceRecord("e1","Automation project","VERIFIED","Project artifact",0.9,"2026-11-01",verified_for=["D1"])
+        evidence = EvidenceRecord("e1","Automation project","VERIFIED","Project artifact",0.9,"2026-11-01",verified_for=["D1"],mapping_reviewed_by="human-reviewer",mapping_reviewed_at="2026-11-01T12:00:00Z")
         registry = EvidenceRegistry([evidence])
         profile = {"candidate_id":"c1","evidence_refs":["e1"]}
         vacancy = {"requirements":[
