@@ -29,7 +29,7 @@ def build_email_message(
     company = vacancy.get("company", "Empresa")
     title = vacancy.get("title", "vacante")
     recipient = to_address or os.getenv("GMAIL_DRAFT_TO")
-    if not recipient or not re.fullmatch(r"[^@\\s]+@[^@\\s]+\\.[^@\\s]+", recipient):
+    if not recipient or not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", recipient):
         raise ValueError("No se permite crear un borrador sin un destinatario de correo válido explícito.")
     matched_text = ", ".join(matched_keywords) or "las competencias relevantes que puedan respaldarse con mi CV"
 
