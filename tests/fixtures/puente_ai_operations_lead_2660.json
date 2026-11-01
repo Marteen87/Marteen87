@@ -1,0 +1,15 @@
+{
+  "fixture_status": "PUBLIC_ROLE_SNAPSHOT_REQUIRES_REVALIDATION",
+  "vacancy_id": "puente-ai-operations-lead-2660",
+  "title": "AI Operations Lead",
+  "source_url": "https://puentetalent.com/jobs/ai-operations-lead-2660",
+  "captured_at": "2026-11-01",
+  "requirements": [
+    {"requirement_id":"M1","text":"3+ years operations or automation experience","type":"mandatory","evidence_refs":[]},
+    {"requirement_id":"M2","text":"End-to-end automations shipped and still running","type":"mandatory","evidence_refs":[]},
+    {"requirement_id":"M3","text":"English C1 written and spoken","type":"mandatory","evidence_refs":[]},
+    {"requirement_id":"D1","text":"Python or scripting experience","type":"desirable","evidence_refs":[]},
+    {"requirement_id":"D2","text":"LLM APIs and agent frameworks","type":"desirable","evidence_refs":[]}
+  ],
+  "note": "Fixture for reproducible evaluation; verify the live vacancy before use. No candidate claims or evidence are embedded."
+}
