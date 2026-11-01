@@ -8,7 +8,9 @@ def evaluate_vacancy(vacancy: dict[str, Any], profile: dict[str, Any], registry:
     requirements = vacancy.get("requirements", [])
     if not isinstance(requirements, list):
         raise ValueError("requirements must be a structured list")
-    refs = set(profile.get("evidence_refs", []))
+    profile_refs = profile.get("evidence_refs", [])
+    if not isinstance(profile_refs, list) or not all(isinstance(x, str) and x.strip() for x in profile_refs):
+        raise ValueError("profile evidence_refs must be a list of non-empty evidence IDs")
     results = []
     seen_ids = set()
     for req in requirements:
@@ -21,10 +23,9 @@ def evaluate_vacancy(vacancy: dict[str, Any], profile: dict[str, Any], registry:
         requirement_type = req.get("type", "mandatory")
         if requirement_type not in VALID_REQUIREMENT_TYPES:
             raise ValueError(f"Invalid requirement type for {requirement_id}: {requirement_type}")
-        req_refs = req.get("evidence_refs", [])
-        if not isinstance(req_refs, list):
-            raise ValueError(f"evidence_refs must be a list for {requirement_id}")
-        linked = registry.supports([x for x in req_refs if x in refs], requirement_id)
+        # Candidate evidence belongs to the private profile/registry, not the public vacancy fixture.
+        # The registry itself enforces VERIFIED status and reviewed requirement mapping.
+        linked = registry.supports(profile_refs, requirement_id)
         status = "VERIFIED" if linked else "INSUFFICIENT_EVIDENCE"
         results.append({
             "requirement_id": requirement_id,
