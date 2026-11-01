@@ -13,123 +13,73 @@
     {
       "requirement_id": "M1",
       "text": "Solid B2B sales, business development or commercial account management experience (ideally 5–7+ years)",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-COM-01",
-        "CV-FIN-01",
-        "CV-B2B-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M2",
       "text": "Proven market opening, client acquisition and commercial agreement closing",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-OPS-01",
-        "CV-B2B-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M3",
       "text": "Autonomous ownership of the full sales cycle from prospecting through negotiation and close",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-COM-01",
-        "CV-OPS-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M4",
       "text": "Commercialization of services, solutions or intangible products",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-FIN-01",
-        "CV-B2B-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M5",
       "text": "Generate new opportunities proactively rather than depending only on inbound leads",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-OPS-01",
-        "CV-COM-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M6",
       "text": "Develop B2B relationships in automotive, insurance, financial services or related sectors",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-COM-01",
-        "CV-FIN-01",
-        "CV-B2B-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M7",
       "text": "Maintain commercial accounts, pipeline and CRM records",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-OPS-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M8",
       "text": "Work with commercial objectives, KPIs, sales/conversion/revenue indicators",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-COM-01",
-        "CV-TEAM-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M9",
       "text": "Coordinate with regional Marketing, Product and Operations and support implementation/post-sale",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-B2B-01",
-        "CV-TEAM-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "M10",
       "text": "Understand the Argentine market and be available for occasional in-person client/partner meetings",
-      "type": "mandatory",
-      "evidence_refs": [
-        "CV-COM-01"
-      ]
+      "type": "mandatory"
     },
     {
       "requirement_id": "D1",
       "text": "Automotive industry, dealerships, after-sales or extended warranty experience",
-      "type": "desirable",
-      "evidence_refs": [
-        "CV-COM-01"
-      ]
+      "type": "desirable"
     },
     {
       "requirement_id": "D2",
       "text": "Insurance, insurtech, fintech or financial services experience",
-      "type": "desirable",
-      "evidence_refs": [
-        "CV-FIN-01"
-      ]
+      "type": "desirable"
     },
     {
       "requirement_id": "D3",
       "text": "Experience building commercial teams, partnerships or distribution channels",
-      "type": "desirable",
-      "evidence_refs": [
-        "CV-TEAM-01",
-        "CV-B2B-01"
-      ]
+      "type": "desirable"
     }
   ],
   "notes": [
     "The 5–7+ year wording is expressed as an ideal/preference in the public description; exact candidate employment dates must be confirmed before asserting duration.",
     "The public listing does not name the end client or publish a salary amount.",
-    "No candidate data or evidence is embedded in this public fixture.",
-    "Verify the exact Ashby application form and current vacancy state immediately before submission."
+    "Verify the exact Ashby application form and current vacancy state immediately before submission.",
+    "Candidate evidence IDs are stored only in the private profile and evidence registry; this public fixture contains vacancy requirements only."
   ]
 }
