@@ -17,6 +17,8 @@ class EvidenceRecord:
     source_url: str = ""
     notes: str = ""
     verified_for: list[str] = field(default_factory=list)
+    mapping_reviewed_by: str = ""
+    mapping_reviewed_at: str = ""
 
     def __post_init__(self):
         if self.status not in VALID_STATUSES:
@@ -51,6 +53,8 @@ class EvidenceRegistry:
             if x in self.records
             and self.records[x].status == "VERIFIED"
             and requirement_id in self.records[x].verified_for
+            and bool(self.records[x].mapping_reviewed_by.strip())
+            and bool(self.records[x].mapping_reviewed_at.strip())
         ]
 
     def save(self, path: str | Path) -> None:
