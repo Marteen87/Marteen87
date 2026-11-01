@@ -1,0 +1,35 @@
+{
+  "records": [
+    {
+      "evidence_id": "EV-001",
+      "claim": "ventas B2B y gestión de cartera",
+      "status": "VERIFIED",
+      "source_type": "CV",
+      "source_url": null,
+      "source_name": "Perfil profesional",
+      "captured_at": null,
+      "confidence": 0.9,
+      "notes": "Afirmación respaldada por experiencia comercial y gestión de cartera.",
+      "related_claims": [
+        "ventas",
+        "gestión de cartera"
+      ]
+    },
+    {
+      "evidence_id": "EV-002",
+      "claim": "excel y reporting de indicadores",
+      "status": "VERIFIED",
+      "source_type": "CV",
+      "source_url": null,
+      "source_name": "Perfil profesional",
+      "captured_at": null,
+      "confidence": 0.85,
+      "notes": "Herramientas y decisiones basadas en indicadores.",
+      "related_claims": [
+        "excel",
+        "kpis"
+      ]
+    }
+  ]
+}
+
