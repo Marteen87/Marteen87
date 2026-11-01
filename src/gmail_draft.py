@@ -28,22 +28,22 @@ def build_email_message(
     candidate_name = profile.get("candidate_name", "Candidato")
     company = vacancy.get("company", "Empresa")
     title = vacancy.get("title", "vacante")
-    recipient = to_address or os.getenv("GMAIL_DRAFT_TO") or "recruiter@company.com"
+    recipient = to_address or os.getenv("GMAIL_DRAFT_TO")
+    if not recipient or not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", recipient):
+        raise ValueError("No se permite crear un borrador sin un destinatario de correo válido explícito.")
     matched_text = ", ".join(matched_keywords) or "las competencias relevantes que puedan respaldarse con mi CV"
 
     subject = f"Interés en {title} - {company}"
     body = f"""Estimado/a equipo de selección de {company},
 
-Me interesa la vacante de {title}. Quiero presentar mi interés en la posición y dejar constancia de mi experiencia relacionada con {matched_text}.
+Me interesa la vacante de {title}. Entre las competencias relacionadas con la posición que puedo ampliar en una conversación se encuentran: {matched_text}.
 
-Mi perfil está centrado en ventas, negociación, gestión comercial, cartera, KPIs y coordinación operativa, con evidencia documentada en mi CV y en la experiencia que puedo respaldar.
-
-Quedo a disposición para ampliar información y conversar sobre cómo podría aportar valor al equipo.
+Quedo a disposición para compartir información adicional y conversar sobre las necesidades del equipo.
 
 Saludos cordiales,
 {candidate_name}
 
-Nota: este es un borrador pendiente de revisión humana antes de cualquier envío.
+Nota: este es un borrador pendiente de revisión humana. No se ha enviado ningún correo.
 """
     return {"to": recipient, "subject": subject, "body": body}
 

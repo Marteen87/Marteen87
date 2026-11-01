@@ -6,6 +6,7 @@ import json
 import os
 import re
 import unicodedata
+from urllib.parse import urlparse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -183,6 +184,18 @@ def read_vacancies(path: Path) -> list[dict[str, str]]:
         return rows
 
 
+def vacancy_is_verified(vacancy: dict[str, str]) -> bool:
+    """Only an explicitly reviewed live vacancy can enter the Gmail draft path."""
+    if (vacancy.get("verification_status") or "").strip().upper() != "VERIFIED":
+        return False
+    url = (vacancy.get("url") or "").strip()
+    try:
+        host = (urlparse(url).hostname or "").lower()
+    except ValueError:
+        return False
+    return bool(host and host not in {"example.com", "www.example.com"} and "." in host)
+
+
 def score_vacancy(vacancy: dict[str, str], profile: dict[str, Any]) -> dict[str, Any]:
     target = " ".join(
         [
@@ -270,7 +283,10 @@ def run(
         safe_id = re.sub(r"[^a-zA-Z0-9_-]+", "-", vacancy["vacancy_id"]).strip("-") or "vacancy"
         (packs_dir / f"{safe_id}.md").write_text(build_pack(vacancy, profile, result), encoding="utf-8")
 
-        if gmail_draft:
+        if gmail_draft and not vacancy_is_verified(vacancy):
+            result["gmail_draft_status"] = "BLOCKED_UNVERIFIED_VACANCY"
+            result["gmail_draft_note"] = "La vacante no tiene verification_status=VERIFIED ni URL real validada; no se creó borrador."
+        elif gmail_draft:
             try:
                 draft_message = build_email_message(vacancy, profile, result["matched_verified_keywords"], to_address=gmail_to)
                 draft_metadata = create_gmail_draft(
@@ -325,7 +341,7 @@ def run(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Evidence-first vacancy triage. Drafts are reviewable but never auto-sent.")
-    parser.add_argument("--profile", type=Path, default=Path("data/profile.json"))
+    parser.add_argument("--profile", type=Path, default=Path("data/profile.template.json"))
     parser.add_argument("--vacancies", type=Path, default=Path("data/vacancies.csv"))
     parser.add_argument("--out", type=Path, default=Path("output"))
     parser.add_argument("--gmail-draft", action="store_true", help="Create Gmail drafts instead of only local markdown packs.")
