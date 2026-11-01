@@ -18,14 +18,30 @@ class JobEngineEvidenceTests(unittest.TestCase):
             self.assertEqual(ProfileManager.load(Path(d)/"profile.json").profile.candidate_id, "c1")
 
     def test_unverified_evidence_does_not_support_claim(self):
-        r = EvidenceRegistry([EvidenceRecord("e1","Python","SELF_REPORTED","CV",0.7,"2026-11-01")])
-        self.assertEqual(r.supports(["e1"]), [])
+        r = EvidenceRegistry([EvidenceRecord("e1","Python","SELF_REPORTED","CV",0.7,"2026-11-01",verified_for=["D1"])])
+        self.assertEqual(r.supports(["e1"], "D1"), [])
+
+    def test_verified_evidence_requires_explicit_requirement_mapping(self):
+        evidence = EvidenceRecord("e1","Python automation project","VERIFIED","Project artifact",0.9,"2026-11-01",verified_for=["D1"])
+        registry = EvidenceRegistry([evidence])
+        self.assertEqual(registry.supports(["e1"], "M2"), [])
+        self.assertEqual([x.evidence_id for x in registry.supports(["e1"], "D1")], ["e1"])
 
     def test_missing_evidence_creates_explicit_gap(self):
         v = {"vacancy_id":"v1","requirements":[{"requirement_id":"R1","text":"English C1","type":"mandatory","evidence_refs":[]}]}
         result = evaluate_vacancy(v, {"candidate_id":"c1","evidence_refs":[]}, EvidenceRegistry())
         self.assertEqual(result["requirements"][0]["status"], "INSUFFICIENT_EVIDENCE")
         self.assertEqual(result["critical_gaps"], ["R1"])
+
+    def test_invalid_requirement_type_is_rejected(self):
+        v = {"requirements":[{"requirement_id":"R1","text":"X","type":"must-have"}]}
+        with self.assertRaises(ValueError):
+            evaluate_vacancy(v, {"evidence_refs":[]}, EvidenceRegistry())
+
+    def test_duplicate_requirement_id_is_rejected(self):
+        v = {"requirements":[{"requirement_id":"R1","text":"X"},{"requirement_id":"R1","text":"Y"}]}
+        with self.assertRaises(ValueError):
+            evaluate_vacancy(v, {"evidence_refs":[]}, EvidenceRegistry())
 
     def test_similarity_is_not_evidence(self):
         idx = SimilarityIndex(Path(tempfile.mkdtemp())/"idx.json")
@@ -46,4 +62,5 @@ class JobEngineEvidenceTests(unittest.TestCase):
         for p in ["data/profile/master_profile_template.json","data/profile/evidence_registry_template.json"]:
             json.loads(Path(p).read_text(encoding="utf-8"))
 
-if __name__ == "__main__": unittest.main()
+if __name__ == "__main__":
+    unittest.main()
