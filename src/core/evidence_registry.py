@@ -1,103 +1,63 @@
 from __future__ import annotations
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass, asdict, field
 from pathlib import Path
 import json
 from typing import Any
 
+VALID_STATUSES = {"VERIFIED", "PARTIAL", "SELF_REPORTED", "UNKNOWN", "SYNTHETIC"}
 
 @dataclass
-class CandidateProfile:
-    candidate_name: str = "Candidato"
-    role_focus: list[str] = field(default_factory=list)
-    verified_skills: list[str] = field(default_factory=list)
-    verified_experience: list[str] = field(default_factory=list)
-    unknowns: list[str] = field(default_factory=list)
-    constraints: list[str] = field(default_factory=list)
-    evidence_refs: list[str] = field(default_factory=list)
+class EvidenceRecord:
+    evidence_id: str
+    claim: str
+    status: str
+    source: str
+    confidence: float
+    captured_at: str
+    source_url: str = ""
+    notes: str = ""
+    verified_for: list[str] = field(default_factory=list)
+    mapping_reviewed_by: str = ""
+    mapping_reviewed_at: str = ""
+
+    def __post_init__(self):
+        if self.status not in VALID_STATUSES:
+            raise ValueError(f"Invalid evidence status: {self.status}")
+        if not 0.0 <= self.confidence <= 1.0:
+            raise ValueError("confidence must be between 0 and 1")
+        if not self.evidence_id or not self.claim or not self.source:
+            raise ValueError("evidence_id, claim and source are required")
+        if not isinstance(self.verified_for, list) or not all(isinstance(x, str) and x.strip() for x in self.verified_for):
+            raise ValueError("verified_for must be a list of non-empty requirement IDs")
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "candidate_name": self.candidate_name,
-            "role_focus": self.role_focus,
-            "verified_skills": self.verified_skills,
-            "verified_experience": self.verified_experience,
-            "unknowns": self.unknowns,
-            "constraints": self.constraints,
-            "evidence_refs": self.evidence_refs,
-        }
+        return asdict(self)
+
+class EvidenceRegistry:
+    def __init__(self, records: list[EvidenceRecord] | None = None):
+        self.records = {r.evidence_id: r for r in (records or [])}
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "CandidateProfile":
-        return cls(
-            candidate_name=str(payload.get("candidate_name", "Candidato")),
-            role_focus=list(payload.get("role_focus", []) or []),
-            verified_skills=list(payload.get("verified_skills", []) or []),
-            verified_experience=list(payload.get("verified_experience", []) or []),
-            unknowns=list(payload.get("unknowns", []) or []),
-            constraints=list(payload.get("constraints", []) or []),
-            evidence_refs=list(payload.get("evidence_refs", []) or []),
-        )
+    def from_file(cls, path: str | Path) -> "EvidenceRegistry":
+        p = Path(path)
+        data = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"records": []}
+        return cls([EvidenceRecord(**x) for x in data.get("records", [])])
 
+    def get_by_id(self, evidence_id: str) -> EvidenceRecord | None:
+        return self.records.get(evidence_id)
 
-class ProfileManager:
-    def __init__(self, path: str | Path | None = None, profile: CandidateProfile | None = None):
-        self.path = Path(path) if path is not None else None
-        self.profile = profile or CandidateProfile()
+    def supports(self, evidence_ids: list[str], requirement_id: str) -> list[EvidenceRecord]:
+        # Authenticity and relevance are separate: a reviewer must explicitly map evidence to a requirement.
+        return [
+            self.records[x] for x in evidence_ids
+            if x in self.records
+            and self.records[x].status == "VERIFIED"
+            and requirement_id in self.records[x].verified_for
+            and bool(self.records[x].mapping_reviewed_by.strip())
+            and bool(self.records[x].mapping_reviewed_at.strip())
+        ]
 
-    @classmethod
-    def load(cls, path: str | Path) -> "ProfileManager":
-        file_path = Path(path)
-        payload = json.loads(file_path.read_text(encoding="utf-8")) if file_path.exists() else {}
-        return cls(path=file_path, profile=CandidateProfile.from_dict(payload))
-
-    def save(self) -> None:
-        if self.path is None:
-            raise ValueError("ProfileManager.path is required before saving.")
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.profile.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
-
-    def validate(self) -> dict[str, Any]:
-        issues: list[str] = []
-        if not self.profile.candidate_name.strip():
-            issues.append("candidate_name is required")
-        if not isinstance(self.profile.verified_skills, list):
-            issues.append("verified_skills must be a list")
-        if not isinstance(self.profile.verified_experience, list):
-            issues.append("verified_experience must be a list")
-        return {
-            "valid": not issues,
-            "issues": issues,
-            "profile": self.profile.to_dict(),
-        }
-
-    def add_skill(self, skill: str) -> None:
-        if skill and skill not in self.profile.verified_skills:
-            self.profile.verified_skills.append(skill)
-
-    def add_evidence_ref(self, evidence_ref: str) -> None:
-        if evidence_ref and evidence_ref not in self.profile.evidence_refs:
-            self.profile.evidence_refs.append(evidence_ref)
-
-
-DEFAULT_PROFILE = CandidateProfile(
-    candidate_name="Candidato",
-    role_focus=["AI Operations", "Commercial Operations", "Automation"],
-    verified_skills=[
-        "ventas",
-        "negociación",
-        "gestión de cartera",
-        "excel",
-        "automatización",
-        "coordinación operativa",
-    ],
-    verified_experience=[
-        "ventas B2B",
-        "gestión de cartera",
-        "coordinación operativa",
-    ],
-    unknowns=["inglés certificado", "automatización en producción"],
-    constraints=["no inventar experiencia no documentada", "mantener evidencia verificable"],
-    evidence_refs=[],
-).to_dict()
-
+    def save(self, path: str | Path) -> None:
+        p = Path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps({"records": [r.to_dict() for r in self.records.values()]}, ensure_ascii=False, indent=2), encoding="utf-8")

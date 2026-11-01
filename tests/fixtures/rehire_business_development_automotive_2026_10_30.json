@@ -1,0 +1,85 @@
+{
+  "fixture_status": "PUBLIC_ROLE_SNAPSHOT_CROSSCHECKED_WITH_REHIRE_CAREERS_PORTAL_AND_RECENT_PUBLIC_LISTINGS",
+  "vacancy_id": "rehire-business-development-automotive-argentina-2026-10-30",
+  "title": "Desarrollador de Negocios — Desarrollo Comercial B2B — Sector Automotriz",
+  "company": "ReHire (cliente internacional del sector automotriz; cliente final no identificado en el aviso público)",
+  "source_url": "https://www.rehire.ar/es/empleos",
+  "secondary_source_url": "https://dametrabajo.com/aviso/desarrollador-de-negocios-argentina-100-remoto-desarrollo-comercial-b2-f79d4c05d2992b71",
+  "captured_at": "2026-11-01",
+  "work_model": "Remote from Argentina; occasional in-person client/partner meetings may be required",
+  "schedule": "Full-time, 9:00–18:00",
+  "compensation": "Not disclosed; listing describes approximately 70% fixed / 30% variable compensation structure",
+  "requirements": [
+    {
+      "requirement_id": "M1",
+      "text": "Solid B2B sales, business development or commercial account management experience (ideally 5–7+ years)",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M2",
+      "text": "Proven market opening, client acquisition and commercial agreement closing",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M3",
+      "text": "Autonomous ownership of the full sales cycle from prospecting through negotiation and close",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M4",
+      "text": "Commercialization of services, solutions or intangible products",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M5",
+      "text": "Generate new opportunities proactively rather than depending only on inbound leads",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M6",
+      "text": "Develop B2B relationships in automotive, insurance, financial services or related sectors",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M7",
+      "text": "Maintain commercial accounts, pipeline and CRM records",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M8",
+      "text": "Work with commercial objectives, KPIs, sales/conversion/revenue indicators",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M9",
+      "text": "Coordinate with regional Marketing, Product and Operations and support implementation/post-sale",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "M10",
+      "text": "Understand the Argentine market and be available for occasional in-person client/partner meetings",
+      "type": "mandatory"
+    },
+    {
+      "requirement_id": "D1",
+      "text": "Automotive industry, dealerships, after-sales or extended warranty experience",
+      "type": "desirable"
+    },
+    {
+      "requirement_id": "D2",
+      "text": "Insurance, insurtech, fintech or financial services experience",
+      "type": "desirable"
+    },
+    {
+      "requirement_id": "D3",
+      "text": "Experience building commercial teams, partnerships or distribution channels",
+      "type": "desirable"
+    }
+  ],
+  "notes": [
+    "The 5–7+ year wording is expressed as an ideal/preference in the public description; exact candidate employment dates must be confirmed before asserting duration.",
+    "The public listing does not name the end client or publish a salary amount.",
+    "Verify the exact Ashby application form and current vacancy state immediately before submission.",
+    "Candidate evidence IDs are stored only in the private profile and evidence registry; this public fixture contains vacancy requirements only."
+  ]
+}

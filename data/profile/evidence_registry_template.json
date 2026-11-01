@@ -1,31 +1,3 @@
 {
-  "candidate_name": "Candidato",
-  "role_focus": [
-    "AI Operations",
-    "Commercial Operations",
-    "Automation"
-  ],
-  "verified_skills": [
-    "ventas",
-    "negociación",
-    "gestión de cartera",
-    "excel",
-    "automatización",
-    "coordinación operativa"
-  ],
-  "verified_experience": [
-    "ventas B2B",
-    "gestión de cartera",
-    "coordinación operativa"
-  ],
-  "unknowns": [
-    "inglés certificado",
-    "automatización en producción"
-  ],
-  "constraints": [
-    "no inventar experiencia no documentada",
-    "mantener evidencia verificable"
-  ],
-  "evidence_refs": []
+  "records": []
 }
-

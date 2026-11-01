@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "candidate_id": "candidate-local",
+  "plan_type": "EVIDENCE_COLLECTION",
+  "evidence_items": [],
+  "missing_registry_records": [],
+  "summary": {
+    "referenced_evidence": 0,
+    "records_found": 0,
+    "records_missing": 0,
+    "verified_records_not_reverified": 0,
+    "automatic_verification_performed": false
+  },
+  "guardrails": [
+    "This plan does not verify evidence or change registry status.",
+    "Private candidate evidence must not be committed to a public repository."
+  ]
+}
