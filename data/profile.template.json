@@ -1,0 +1,11 @@
+{
+  "candidate_name": "Completar nombre profesional",
+  "verified_keywords": [],
+  "evidence": [],
+  "profile_status": "EMPTY_TEMPLATE_REQUIRES_USER_VERIFICATION",
+  "notes": [
+    "No agregar competencias a verified_keywords sin evidencia concreta y aprobación del candidato.",
+    "Cada elemento de evidence debe identificar un artefacto o antecedente comprobable.",
+    "Este archivo es una plantilla pública sin datos personales."
+  ]
+}
