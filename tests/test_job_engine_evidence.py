@@ -33,6 +33,30 @@ class JobEngineEvidenceTests(unittest.TestCase):
         self.assertEqual(result["requirements"][0]["status"], "INSUFFICIENT_EVIDENCE")
         self.assertEqual(result["critical_gaps"], ["R1"])
 
+    def test_evaluator_only_accepts_evidence_mapped_to_requirement(self):
+        evidence = EvidenceRecord("e1","Automation project","VERIFIED","Project artifact",0.9,"2026-11-01",verified_for=["D1"])
+        registry = EvidenceRegistry([evidence])
+        profile = {"candidate_id":"c1","evidence_refs":["e1"]}
+        vacancy = {"requirements":[
+            {"requirement_id":"M2","text":"Shipped automations","type":"mandatory","evidence_refs":["e1"]},
+            {"requirement_id":"D1","text":"Python scripting","type":"desirable","evidence_refs":["e1"]}
+        ]}
+        result = evaluate_vacancy(vacancy, profile, registry)
+        self.assertEqual(result["requirements"][0]["status"], "INSUFFICIENT_EVIDENCE")
+        self.assertEqual(result["requirements"][1]["status"], "VERIFIED")
+        self.assertEqual(result["critical_gaps"], ["M2"])
+        self.assertEqual(result["recommendation"], "REVIEW")
+
+    def test_puente_fixture_evaluates_as_review_with_explicit_gaps(self):
+        fixture_path = Path("tests/fixtures/puente_ai_operations_lead_2660.json")
+        vacancy = json.loads(fixture_path.read_text(encoding="utf-8"))
+        result = evaluate_vacancy(vacancy, {"candidate_id":"candidate-local","evidence_refs":[]}, EvidenceRegistry())
+        self.assertEqual(result["recommendation"], "REVIEW")
+        self.assertEqual(result["mandatory_total"], 3)
+        self.assertEqual(result["mandatory_verified"], 0)
+        self.assertEqual(result["critical_gaps"], ["M1", "M2", "M3"])
+        self.assertTrue(result["human_review_required"])
+
     def test_invalid_requirement_type_is_rejected(self):
         v = {"requirements":[{"requirement_id":"R1","text":"X","type":"must-have"}]}
         with self.assertRaises(ValueError):
