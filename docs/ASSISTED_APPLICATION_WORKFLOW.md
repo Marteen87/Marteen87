@@ -16,7 +16,7 @@ Prepare a vacancy-specific, evidence-traceable application pack and enforce an e
     registry = EvidenceRegistry.from_file("data/private/evidence_registry.json")
     pack = prepare_application(vacancy, profile, registry, "data/applications/prepared")
 
-A vacancy is eligible only when it contains:
+The output directory receives application.json, application.md, tailored_cv.md, and cover_letter.md. CV sections are copied from the private profile; selected sections are reordered lexically for presentation only. The cover letter uses the profile headline/summary and includes requirement claims only when the evidence-first engine has a reviewed mapping. These files remain drafts for human editing.\n\nA vacancy is eligible only when it contains:
 - verification_status: VERIFIED
 - a real HTTPS source_url
 - source_verified_by and source_verified_at
