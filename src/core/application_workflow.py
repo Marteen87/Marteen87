@@ -67,6 +67,13 @@ def _sha256(payload: dict[str, Any]) -> str:
     raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
+def _verify_integrity(payload: dict[str, Any]) -> None:
+    expected = payload.get("integrity_sha256")
+    unsigned = dict(payload)
+    unsigned.pop("integrity_sha256", None)
+    if not expected or expected != _sha256(unsigned):
+        raise ApplicationWorkflowError("Application pack integrity check failed; review the source artifact.")
+
 def prepare_application(
     vacancy: dict[str, Any],
     profile: dict[str, Any],
@@ -162,6 +169,7 @@ def record_human_decision(
 ) -> dict[str, Any]:
     path = Path(application_file)
     payload = json.loads(path.read_text(encoding="utf-8"))
+    _verify_integrity(payload)
     if payload.get("status") != "PREPARED_PENDING_HUMAN_APPROVAL":
         raise ApplicationWorkflowError("Human decision can only be recorded for a pending application.")
     normalized = decision.strip().upper()
@@ -192,6 +200,7 @@ def record_confirmed_submission(
     """Record a submission already completed externally; it does not perform the submission."""
     path = Path(application_file)
     payload = json.loads(path.read_text(encoding="utf-8"))
+    _verify_integrity(payload)
     if payload.get("status") != "APPROVED_READY_TO_SUBMIT":
         raise ApplicationWorkflowError("Submission cannot be recorded before explicit human approval.")
     if not channel.strip() or not confirmation_reference.strip() or not reviewer.strip():
