@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -77,6 +78,17 @@ class AssistedApplicationWorkflowTests(unittest.TestCase):
             self.assertEqual(rejected["status"], "REJECTED_BY_HUMAN")
             with self.assertRaises(ApplicationWorkflowError):
                 record_confirmed_submission(path, channel="portal", confirmation_reference="receipt", reviewer="candidate")
+
+
+    def test_tampered_pack_cannot_be_approved(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            prepare_application(self.vacancy, self.profile, EvidenceRegistry(), tmp)
+            path = Path(tmp) / "vacancy-001" / "application.json"
+            data = json.loads(path.read_text(encoding="utf-8"))
+            data["candidate_snapshot"]["headline"] = "Tampered claim"
+            path.write_text(json.dumps(data), encoding="utf-8")
+            with self.assertRaises(ApplicationWorkflowError):
+                record_human_decision(path, decision="APPROVE", reviewer="candidate")
 
     def test_submission_requires_prior_approval_and_external_receipt(self):
         with tempfile.TemporaryDirectory() as tmp:
