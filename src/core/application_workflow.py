@@ -74,6 +74,91 @@ def _verify_integrity(payload: dict[str, Any]) -> None:
     if not expected or expected != _sha256(unsigned):
         raise ApplicationWorkflowError("Application pack integrity check failed; review the source artifact.")
 
+
+def _as_lines(value: Any) -> list[str]:
+    if value is None or value == "":
+        return []
+    if isinstance(value, list):
+        return [json.dumps(item, ensure_ascii=False) if isinstance(item, (dict, list)) else str(item) for item in value]
+    if isinstance(value, dict):
+        return [f"{key}: {json.dumps(item, ensure_ascii=False) if isinstance(item, (dict, list)) else item}" for key, item in value.items()]
+    return [str(value)]
+
+def _relevance(text: str, requirements: list[dict[str, Any]]) -> int:
+    # Presentation order only; this lexical score is never treated as evidence or compatibility.
+    words = set(re.findall(r"[a-z0-9áéíóúñ]{3,}", text.lower()))
+    target = set(re.findall(
+        r"[a-z0-9áéíóúñ]{3,}",
+        " ".join(str(item.get("text", "")) for item in requirements).lower()
+    ))
+    return len(words & target)
+
+def _render_tailored_cv(profile: dict[str, Any], vacancy: dict[str, Any]) -> str:
+    sections = [f"# {profile.get('candidate_name', '')}"]
+    if profile.get("headline"):
+        sections.extend(["", f"**{profile['headline']}**"])
+    if profile.get("location"):
+        sections.extend(["", str(profile["location"])])
+    contact = profile.get("contact")
+    if contact:
+        sections.extend(["", " | ".join(_as_lines(contact))])
+    if profile.get("summary"):
+        sections.extend(["", "## Perfil profesional", str(profile["summary"])])
+    requirements = vacancy.get("requirements", [])
+    for field, heading in (
+        ("skills", "Competencias"),
+        ("experience", "Experiencia"),
+        ("employment_history", "Trayectoria profesional"),
+        ("projects", "Proyectos"),
+        ("education", "Formación"),
+        ("certifications", "Capacitaciones y certificaciones"),
+        ("languages", "Idiomas"),
+    ):
+        entries = _as_lines(profile.get(field))
+        if not entries:
+            continue
+        if field in {"skills", "experience", "employment_history", "projects"}:
+            entries.sort(key=lambda item: _relevance(item, requirements), reverse=True)
+        sections.extend(["", f"## {heading}"])
+        sections.extend(f"- {item}" for item in entries)
+    sections.extend([
+        "",
+        "---",
+        f"**Objetivo de esta versión:** {vacancy.get('title', '')} — {vacancy.get('company', '')}.",
+        "El orden de presentación se ajustó a los términos de la vacante. Las afirmaciones se copiaron del perfil; el orden léxico no constituye prueba de experiencia.",
+    ])
+    return "\n".join(sections) + "\n"
+
+def _render_cover_letter(profile: dict[str, Any], vacancy: dict[str, Any], evaluation: dict[str, Any]) -> str:
+    name = str(profile.get("candidate_name", "")).strip()
+    headline = str(profile.get("headline", "")).strip()
+    summary = str(profile.get("summary", "")).strip()
+    verified = [
+        item for item in evaluation.get("requirements", [])
+        if item.get("status") == "VERIFIED" and item.get("evidence_ids")
+    ]
+    lines = [
+        f"# Carta de presentación — {vacancy.get('title', '')}",
+        "",
+        f"Estimado equipo de selección de {vacancy.get('company', '')}:",
+        "",
+        f"Me interesa presentar mi candidatura para la posición de {vacancy.get('title', '')}.",
+    ]
+    if headline:
+        lines.extend(["", f"Mi perfil profesional está orientado a {headline}."])
+    if summary:
+        lines.extend(["", summary])
+    if verified:
+        lines.extend(["", "Entre los requisitos para los que existe evidencia revisada y vinculada se encuentran:"])
+        lines.extend(f"- {item['text']} (evidencia: {', '.join(item['evidence_ids'])})" for item in verified)
+    else:
+        lines.extend([
+            "",
+            "Quedo a disposición para conversar sobre las necesidades del puesto y ampliar los antecedentes de mi trayectoria que resulten pertinentes.",
+        ])
+    lines.extend(["", "Saludos cordiales,", "", name, "", "---", "Borrador personalizado pendiente de revisión humana. No enviar sin verificar todos los datos y completar los campos que correspondan."])
+    return "\n".join(lines) + "\n"
+
 def prepare_application(
     vacancy: dict[str, Any],
     profile: dict[str, Any],
@@ -126,6 +211,8 @@ def prepare_application(
     (folder / "application.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True), encoding="utf-8"
     )
+    (folder / "tailored_cv.md").write_text(_render_tailored_cv(snapshot, vacancy), encoding="utf-8")
+    (folder / "cover_letter.md").write_text(_render_cover_letter(snapshot, vacancy, evaluation), encoding="utf-8")
 
     lines = [
         f"# Application pack — {vacancy['title']} / {vacancy['company']}",
@@ -139,7 +226,9 @@ def prepare_application(
         "## Candidate profile snapshot",
         "The following fields are copied from the private candidate profile; review and edit before use.",
         "",
-        "    " + json.dumps(snapshot, ensure_ascii=False, indent=2).replace("\\n", "\\n    "),
+        "```json",
+        *json.dumps(snapshot, ensure_ascii=False, indent=2).splitlines(),
+        "```",
         "",
         "## Requirement-by-requirement review",
     ]
