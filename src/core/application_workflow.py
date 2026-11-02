@@ -149,7 +149,7 @@ def prepare_application(
         "",
         f"- Integrity SHA-256: {payload['integrity_sha256']}",
     ])
-    (folder / "application.md").write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+    (folder / "application.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return payload
 
 def record_human_decision(
